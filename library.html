@@ -43,6 +43,7 @@
     <script class="book" type="text/template">
       <div class="book">
         <p><%=title%> by <%=author%> is <%=status%></p>
+        <button type="button" id="checkout">Check out</button>
       </div>
     </script>
   </div>
@@ -51,55 +52,101 @@
 <script type="text/javascript">
 
 
-  //make a string with which to create template
-  var templateHtml = $('#templates .book').html();
+//make a string with which to create template
+var templateHtml = $('#templates .book').html();
 
-  // Make a template with that string
-  var template = _.template(templateHtml);
+// Make a template with that string
+var template = _.template(templateHtml);
 
-  // var book = {
-  //   title: 'The Bible',
-  //   author: 'Jesus',
-  //   status: 'available'
-  // };
+var books = [];
 
-  // // put stuff into template
-  // var newBookHtml = template(book);
+var renderLibrary = function () {
+console.log("XXXXXXXX");
+}
 
-  // $('#library').append(newBookHtml);
+var addBook = function (book) {
+  book.status = 'available';
+  this.books.push(book);
+}
 
-  var books = [  
-    {
-      title: 'Harry Potter',
-      author: 'JK Rowling',
-      status: 'available'
-    },
-    {
-      title: "Ender's Game",
-      author: 'Orson Scott Card',
-      status: 'available'
+var getBook = function (title) {
+  for (var i = 0; i < books.length; i++){
+    if (books[i].title === title){
+      return books[i];
     }
-  ];
+  }
+}
 
-  var renderLibrary = function () {
+var checkoutBook = function (title) {
+  for (var i = 0; i < books.length; i++){
+    if (books[i].title === title){
+      books[i].status = 'checkedOut';
+      return books[i];
+    }
+  }
+  return null;
+}
+
+
+
+var Library = function () {
+  this.templateHtml = templateHtml;
+  this.template = template;
+  this.addBook = addBook;
+  this.getBook = getBook;
+  this.books = books;
+  this.checkoutBook = checkoutBook;
+
+  this.render = function () {
+    $('#library').empty();
     for (var i = 0; i < books.length; i++){
-      var templ = template(books[i]);
+      var templ = this.template(books[i]);
       $('#library').append(templ);
     }
   }
+}
 
-  renderLibrary();
+$('#submit').on('click', function(){
+  var add_title = $('#text1').val();
+  var add_author = $('#text2').val();
 
-    $('#submit').on('click', function(){
-    var add_title = $('#text1').val();
-    var add_author = $('#text2').val();
+  books.push({title: add_title, author: add_author, status: 'available'});
 
-    // put stuff into template
-    newBookHtml = template({title: add_title, author: add_author, status: 'available'});
+  lib.render();
+});
 
-    $('#library').append(newBookHtml);
+$('#checkout').on('click', function(){
+  console.log('this');
+});
 
-  });
+var lib = new Library();
+console.log('New library:', lib);
+
+lib.addBook({
+  title: 'Test Title 1',
+  author: 'Author 1'
+});
+console.log('# of books should be 1:', lib.books.length);
+
+lib.addBook({
+  title: 'Test Title 2',
+  author: 'Author 2'
+});
+console.log('# of books should be 2:', lib.books.length);
+
+var book = lib.getBook('Test Title 1');
+console.log('The book should exist:', book);
+console.log('Book status should be available:', book.status);
+
+// This should render all the library's books to the web page
+lib.render();
+
+console.log("The following should return an object: ", lib.checkoutBook('Test Title 2'));
+
+
+
+console.log("The following should return null: ",lib.checkoutBook('asdfasdf'));
+
     
 </script>
 

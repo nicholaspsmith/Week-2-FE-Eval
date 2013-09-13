@@ -43,7 +43,16 @@
     <script class="book" type="text/template">
       <div class="book">
         <p><%=title%> by <%=author%> is <%=status%></p>
-        <button type="button" class="checkout_button" data-title="<%=title%>" data-status="<%=status%>">Check out <%=title%></button>
+        <button type="button" class="checkout_button" data-title="<%=title%>" data-status="<%=status%>">
+          
+          <% if (status === 'available') { %>
+          Check out
+          <% } else { %>
+            Return
+            <%}%>
+
+          <%=title%>
+        </button>
       </div>
     </script>
   </div>
@@ -130,7 +139,7 @@ $(document).on('click', '.checkout_button', function(){
       checkoutBook(thisTitle);
 
       // Change text to "Return"
-      $(this).val('Return');
+      $(this).text('Return');
     } else if ($(this).data('status') === "checkedOut"){
       returnBook(thisTitle);
     }

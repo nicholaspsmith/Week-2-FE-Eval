@@ -35,7 +35,7 @@
   <input type="text" id="text1" placeholder="Title"/>
   <input type="text" id="text2" placeholder="Author"/>
 </div>
-    <button type="button" id="submit">Turn In</button>
+    <button type="button" id="submit">Submit</button>
 
 <div id="library"></div>
 
@@ -43,13 +43,13 @@
     <script class="book" type="text/template">
       <div class="book">
         <p><%=title%> by <%=author%> is <%=status%></p>
-        <button type="button" class="checkout_button" data-title="<%=title%>" data-status="<%=status%>">
+        <button type="button" class="checkout-button" data-title="<%=title%>" data-status="<%=status%>">
           
           <% if (status === 'available') { %>
           Check out
           <% } else { %>
             Return
-            <%}%>
+          <%}%>
 
           <%=title%>
         </button>
@@ -67,36 +67,34 @@ var templateHtml = $('#templates .book').html();
 // Make a template with that string
 var template = _.template(templateHtml);
 
-var books = [];
-
 var addBook = function (book) {
   book.status = 'available';
   this.books.push(book);
 }
 
 var getBook = function (title) {
-  for (var i = 0; i < books.length; i++){
-    if (books[i].title === title){
-      return books[i];
+  for (var i = 0; i < this.books.length; i++){
+    if (this.books[i].title === title){
+      return this.books[i];
     }
   }
 }
 
 var checkoutBook = function (title) {
-  for (var i = 0; i < books.length; i++){
-    if (books[i].title === title){
-      books[i].status = 'checkedOut';
-      return books[i];
+  for (var i = 0; i < lib.books.length; i++){
+    if (lib.books[i].title === title){
+      lib.books[i].status = 'checkedOut';
+      return lib.books[i];
     }
   }
   return null;
 }
 
 var returnBook = function (title) {
-  for (var i = 0; i < books.length; i++){
-    if (books[i].title === title){
-      books[i].status = 'available';
-      return books[i];
+  for (var i = 0; i < lib.books.length; i++){
+    if (lib.books[i].title === title){
+      lib.books[i].status = 'available';
+      return lib.books[i];
     }
   }
   return null;
@@ -105,45 +103,40 @@ var returnBook = function (title) {
 
 
 var Library = function () {
-  this.templateHtml = templateHtml;
-  this.template = template;
   this.addBook = addBook;
   this.getBook = getBook;
-  this.books = books;
+  this.books = [];
   this.checkoutBook = checkoutBook;
   this.returnBook = returnBook;
 
   this.render = function () {
     $('#library').empty();
-    for (var i = 0; i < books.length; i++){
-      var templ = this.template(books[i]);
+    for (var i = 0; i < this.books.length; i++){
+      var templ = template(this.books[i]);
       $('#library').append(templ);
     }
   }
 }
 
 $('#submit').on('click', function(){
-  var add_title = $('#text1').val();
-  var add_author = $('#text2').val();
+  var newTitle = $('#text1').val();
+  var newAuthor = $('#text2').val();
 
-  books.push({title: add_title, author: add_author, status: 'available'});
+  lib.books.push({title: newTitle, author: newAuthor, status: 'available'});
 
   lib.render();
 });
 
-$(document).on('click', '.checkout_button', function(){
-  // longer way to write next line $(this).attr('data-title');
+$(document).on('click', '.checkout-button', function(){
   var thisTitle = $(this).data('title');
-  if ($(this).data('title') === thisTitle){
-    if ($(this).data('status') === "available"){
-      checkoutBook(thisTitle);
+  var thisStatus = $(this).data('status');
 
-      // Change text to "Return"
-      $(this).text('Return');
-    } else if ($(this).data('status') === "checkedOut"){
-      returnBook(thisTitle);
-    }
-  }
+  if (thisStatus === "available"){
+    checkoutBook(thisTitle);
+
+  } else if (thisStatus === "checkedOut"){
+    returnBook(thisTitle);
+  } 
 
   lib.render();
 });
@@ -152,18 +145,18 @@ var lib = new Library();
 console.log('New library:', lib);
 
 lib.addBook({
-  title: 'Test Title 1',
-  author: 'Author 1'
+  title: 'Harry Potter',
+  author: 'JK Rowling'
 });
 console.log('# of books should be 1:', lib.books.length);
 
 lib.addBook({
-  title: 'Test Title 2',
-  author: 'Author 2'
+  title: 'How to Win Friends and Influence People',
+  author: 'Dale Carnegie'
 });
 console.log('# of books should be 2:', lib.books.length);
 
-var book = lib.getBook('Test Title 1');
+var book = lib.getBook('Harry Potter');
 console.log('The book should exist:', book);
 console.log('Book status should be available:', book.status);
 

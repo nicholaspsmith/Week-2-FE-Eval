@@ -43,7 +43,7 @@
     <script class="book" type="text/template">
       <div class="book">
         <p><%=title%> by <%=author%> is <%=status%></p>
-        <button type="button" id="checkout">Check out</button>
+        <button type="button" class="checkout_button" data-title="<%=title%>" data-status="<%=status%>">Check out <%=title%></button>
       </div>
     </script>
   </div>
@@ -59,10 +59,6 @@ var templateHtml = $('#templates .book').html();
 var template = _.template(templateHtml);
 
 var books = [];
-
-var renderLibrary = function () {
-console.log("XXXXXXXX");
-}
 
 var addBook = function (book) {
   book.status = 'available';
@@ -87,6 +83,16 @@ var checkoutBook = function (title) {
   return null;
 }
 
+var returnBook = function (title) {
+  for (var i = 0; i < books.length; i++){
+    if (books[i].title === title){
+      books[i].status = 'available';
+      return books[i];
+    }
+  }
+  return null;
+}
+
 
 
 var Library = function () {
@@ -96,6 +102,7 @@ var Library = function () {
   this.getBook = getBook;
   this.books = books;
   this.checkoutBook = checkoutBook;
+  this.returnBook = returnBook;
 
   this.render = function () {
     $('#library').empty();
@@ -115,8 +122,21 @@ $('#submit').on('click', function(){
   lib.render();
 });
 
-$('#checkout').on('click', function(){
-  console.log('this');
+$(document).on('click', '.checkout_button', function(){
+  // longer way to write next line $(this).attr('data-title');
+  var thisTitle = $(this).data('title');
+  if ($(this).data('title') === thisTitle){
+    if ($(this).data('status') === "available"){
+      checkoutBook(thisTitle);
+
+      // Change text to "Return"
+      $(this).val('Return');
+    } else if ($(this).data('status') === "checkedOut"){
+      returnBook(thisTitle);
+    }
+  }
+
+  lib.render();
 });
 
 var lib = new Library();
@@ -141,11 +161,6 @@ console.log('Book status should be available:', book.status);
 // This should render all the library's books to the web page
 lib.render();
 
-console.log("The following should return an object: ", lib.checkoutBook('Test Title 2'));
-
-
-
-console.log("The following should return null: ",lib.checkoutBook('asdfasdf'));
 
     
 </script>

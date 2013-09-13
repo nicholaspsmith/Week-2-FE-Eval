@@ -2,7 +2,7 @@
 <head>
   <title>Week 2 Frontend Project</title>
   <style type="text/css">
-    #templates { display: none; }
+    #templates { display: block; }
     small { position: fixed; bottom: 4px; right: 4px; }
     #library .book {
       background: #ccc;
@@ -16,24 +16,94 @@
     #library .book h5 {
       font-weight: normal;
     }
+    .book{
+      float: left;
+      margin-right: 5px;
+      margin-top: 5px;
+    }
+    #inputs {
+      display: block;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
 
 <h1>THE LIBRARY</h1>
 
+<div id="inputs">
+  <input type="text" id="text1" placeholder="Title"/>
+  <input type="text" id="text2" placeholder="Author"/>
+</div>
+    <button type="button" id="submit">Turn In</button>
 
 <div id="library"></div>
 
-<div id="templates">
-
-</div>
-
+  <div id="templates">
+    <script class="book" type="text/template">
+      <div class="book">
+        <p><%=title%> by <%=author%> is <%=status%></p>
+      </div>
+    </script>
+  </div>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
 <script type="text/javascript">
-  // TODO
+
+
+  //make a string with which to create template
+  var templateHtml = $('#templates .book').html();
+
+  // Make a template with that string
+  var template = _.template(templateHtml);
+
+  // var book = {
+  //   title: 'The Bible',
+  //   author: 'Jesus',
+  //   status: 'available'
+  // };
+
+  // // put stuff into template
+  // var newBookHtml = template(book);
+
+  // $('#library').append(newBookHtml);
+
+  var books = [  
+    {
+      title: 'Harry Potter',
+      author: 'JK Rowling',
+      status: 'available'
+    },
+    {
+      title: "Ender's Game",
+      author: 'Orson Scott Card',
+      status: 'available'
+    }
+  ];
+
+  var renderLibrary = function () {
+    for (var i = 0; i < books.length; i++){
+      var templ = template(books[i]);
+      $('#library').append(templ);
+    }
+  }
+
+  renderLibrary();
+
+    $('#submit').on('click', function(){
+    var add_title = $('#text1').val();
+    var add_author = $('#text2').val();
+
+    // put stuff into template
+    newBookHtml = template({title: add_title, author: add_author, status: 'available'});
+
+    $('#library').append(newBookHtml);
+
+  });
+    
 </script>
+
+
 
 <small>It's back.</small>
 
